@@ -1,12 +1,37 @@
 # SQL Server Docker Container
 
-This docker container allows you to startup an SQL Server container with a custom initialization script `init.sh`.
+This docker container allows you to startup an SQL Server container with a custom initialization script that is provided through mounting a volume config.
 
-Modify `init.sh` to build a new database once the container is started.
-Run `docker build -t <name>:<tag> .` in the directory to build the image.
-Run `docker run -p 1433:1433 <name>:<tag>` to start a container with the init script.
+# Running the container.
 
-To check if the database is running
+1. `docker build -t <name>:<tag> ./src` Will build an image on your machine.
+2. Create the following structure in your project.
 
-1. `docker exec -it <container_name> 'bash'` and then use `sqlcmd -S localhost -U SA -P ThisIsPassword!` to open an interactive shell inside the docker container.
-2. Use `sqlcmd -S 10.0.75.1,1433 -U SA -P ThisIsPassword!` to open an interactive shell on your host machine (this is why we mapped the internal 1433 to the external 1433 using -p 1433:1433 in the docker run command.)
+```
+<project_folder>
+	- config
+		- <init_script_name>.sql
+	- docker-compose.yaml
+```
+
+3. The minimal docker-compose file will look something like:
+
+```yaml
+version: "3"
+
+services:
+  db:
+    # The name and tag of the image you built in step 1.
+    image: <name>:<tag>
+
+    # <init_script_name> is the same as in step 2.
+    environment:
+      - "init_script=<init_script_name>.sql"
+    # This maps your local ./config folder into the container
+    volumes:
+      - ./config
+
+    # Maps the internal 1433 to the host 1433 so we can connect to from your host machine (ex: using sqlcmd).
+    ports:
+      - 1433:1433
+```

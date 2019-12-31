@@ -1,0 +1,12 @@
+version: "3.7"
+
+services:
+  db:
+    image: test:latest
+    container_name: boop
+    environment:
+      - "init_script=init.sql"
+    volumes:
+      - ./config:/config # Map config folder here to config folder in the container.
+    ports:
+      - 1433:1433

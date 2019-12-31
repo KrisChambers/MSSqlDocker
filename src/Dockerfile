@@ -5,10 +5,7 @@ FROM mcr.microsoft.com/mssql/server:2017-latest
 ENV ACCEPT_EULA=Y
 ENV SA_PASSWORD=ThisIsPassword!
 
-WORKDIR /src
-
-# The script we use to initialize the database. This is the main part that should be modified.
-COPY init.sql ./
+WORKDIR /setup
 
 # The script for the database setup.
 COPY setup-database.sh ./
@@ -23,4 +20,4 @@ RUN chmod +x ./entrypoint.sh
 # SQL Server operates on 1433.
 EXPOSE 1433/tcp
 
-CMD bash ./entrypoint.sh
+ENTRYPOINT [ "/bin/bash", "./entrypoint.sh"]
