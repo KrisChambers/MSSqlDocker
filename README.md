@@ -24,12 +24,14 @@ services:
     # The name and tag of the image you built in step 1.
     image: <name>:<tag>
 
-    # <init_script_name> is the same as in step 2.
-    environment:
-      - "init_script=<init_script_name>.sql"
     # This maps your local ./config folder into the container
     volumes:
-      - ./config
+      - ./config:/config
+
+    # Pass in the script path.
+    environment:
+      - "init_script=<init_script_path>"
+
 
     # Maps the internal 1433 to the host 1433 so we can connect to from your host machine (ex: using sqlcmd).
     ports:
